@@ -38,11 +38,10 @@ This component should get `authClient` from `AuthUIContext` like other component
 ## Steps to Reproduce
 
 1. Clone this repo
-2. Install dependencies: `npm install`
-3. Initialize Tauri: `npm run tauri init`
-4. Build for production: `npm run tauri build`
-5. Run the built app
-6. **Observe the crash**
+2. Install dependencies: `pnpm install`
+3. Build Tauri app for production: `pnpm tauri build --debug`
+4. Open the built app (in `src-tauri/target/debug/bundle/`)
+5. **Observe the crash**
 
 Note: The bug does NOT appear in development mode because the Vite dev server serves from `http://localhost:1420`, which is a valid HTTP URL.
 
@@ -73,15 +72,12 @@ In `src/components/settings/teams/user-team-cell.tsx`:
 
 export function UserTeamCell({ ... }) {
   const {
++   authClient,
     hooks: { useSession },
-+   mutators: { setActiveTeam }, // or get authClient from context
     // ...
   } = useContext(AuthUIContext)
 
-  const handleSetActiveTeam = async () => {
--   await authClient.organization.setActiveTeam({ ... })
-+   await setActiveTeam({ ... }) // Use context method
-  }
+  // Now uses authClient from context instead of the type-inference client
 }
 ```
 
@@ -93,12 +89,24 @@ export function UserTeamCell({ ... }) {
 - Platform: macOS (also affects Windows/Linux)
 
 ## Workaround
+To demonstrate the fix, patch the `@daveyplate/better-auth-ui` package to use a placeholder baseURL.
 
-Until the fix is merged, you can use a package patch. For bun:
+1. Add patch to `package.json`:
 
-```bash
-bun patch @daveyplate/better-auth-ui
-# Edit node_modules/@daveyplate/better-auth-ui/dist/index.js
-# Add baseURL: "http://localhost" to the createAuthClient call
-bun patch --commit 'node_modules/@daveyplate/better-auth-ui'
+```json
+{
+  "pnpm": {
+    "patchedDependencies": {
+      "@daveyplate/better-auth-ui": "patches/@daveyplate__better-auth-ui.patch"
+    }
+  }
+}
 ```
+
+2. Run `pnpm install`
+3. Build Tauri app for production: `pnpm tauri build --debug`
+4. Open the built app (in `src-tauri/target/debug/bundle/`)
+
+The app should not crash anymore:
+
+![App crashes](./tauri-repro_fixed.png)

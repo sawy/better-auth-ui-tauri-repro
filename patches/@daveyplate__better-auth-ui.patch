@@ -1,0 +1,28 @@
+diff --git a/dist/index.cjs b/dist/index.cjs
+index e72637936f21a2e49801b24c24bacafa4e1877ca..313428acd1072bbdb60d4c8e373f6d81004e916e 100644
+--- a/dist/index.cjs
++++ b/dist/index.cjs
+@@ -6261,6 +6261,9 @@ var _client = require('@better-auth/passkey/client');
+ var _plugins = require('better-auth/client/plugins');
+ var _react2 = require('better-auth/react');
+ var authClient = _react2.createAuthClient.call(void 0, {
++  // Provide a placeholder baseURL to prevent errors in non-HTTP environments (e.g., Tauri, Electron)
++  // This client is only used for type inference and should not be used at runtime
++  baseURL: "http://localhost:1212",
+   plugins: [
+     _plugins.apiKeyClient.call(void 0, ),
+     _plugins.multiSessionClient.call(void 0, ),
+diff --git a/dist/index.js b/dist/index.js
+index 4d22c0952f73d0959caf501e10c7ae578a6104b1..bd1e45c3bd929e2ab8de285050de6bd38ebea64f 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -6261,6 +6261,9 @@ import {
+ } from "better-auth/client/plugins";
+ import { createAuthClient } from "better-auth/react";
+ var authClient = createAuthClient({
++  // Provide a placeholder baseURL to prevent errors in non-HTTP environments (e.g., Tauri, Electron)
++  // This client is only used for type inference and should not be used at runtime
++  baseURL: "http://localhost:1212",
+   plugins: [
+     apiKeyClient(),
+     multiSessionClient(),
